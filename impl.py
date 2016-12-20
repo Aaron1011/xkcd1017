@@ -18,14 +18,30 @@ def fromDecimal(start):
 
     return result
 
+class MyFormatter:
 
-if __name__ == "__main__":
+    def __contains__(self, item):
+        return item == "{bar}"
+
+    def split(self, item):
+        if item == "{bar}":
+            return '{desc}{percentage:3.0f}%|', RightFormat()
+
+    def __str__(self):
+        return self
+
+class RightFormat:
+    def format(self, **kwargs):
+        return get_formatter(kwargs['percentage'] / 100)
+
+
+def get_formatter(x):
     cur = datetime.now()
-    past = formula(float(sys.argv[1]))
+    past = formula(x)
     diff = cur.year - past
     p = inflect.engine()
 
     if diff > 0:
-        print(fromDecimal(diff).strftime("%B %Y"))
+        return fromDecimal(diff).strftime("%B %Y")
     else:
-        print(p.number_to_words(int(round(past, 3-len(str(int(past)))))), "years agp")
+        return p.number_to_words(int(round(past, 2-len(str(int(past)))))) + " years ago"
